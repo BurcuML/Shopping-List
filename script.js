@@ -1,9 +1,15 @@
 const shoppingList = document.querySelector('.shopping-list');
 const shoppingForm = document.querySelector('.shopping-form');
+const filterButtons = document.querySelectorAll(".filter-buttons button")
+
 
 document.addEventListener("DOMContentLoaded", function(){
 shoppingForm.addEventListener('submit', submitFormHandler)
 saveItem();
+
+for(let button of filterButtons){
+    button.addEventListener("click", handleFilterSelection)
+}
 })
 
 
@@ -86,7 +92,10 @@ function createItem(item){
     const div = document.createElement("div")
     div.textContent = item.name
     div.classList.add("item-name")
-    
+    div.addEventListener("click", editModal)
+    div.addEventListener("blur", closeModal)
+
+
     //delete icon
     const deleteIcon = document.createElement("span")
     deleteIcon.className = "fs-3 bi bi-x text-danger delete-icon" //bir tane değil birkaç tane class olduğu için classname kullandık
@@ -111,5 +120,29 @@ function toggleCompleted(e){
 
 function removeItem(e){
     const li = e.target.parentElement;
-    shoppingList.remove(li);
+    shoppingList.removeChild(li);
+}
+
+function editModal(e){
+    const li = e.target.parentElement;
+    if(li.hasAttribute("item-purchased") == false){
+        e.target.contentEditable = true;
+    }
+}
+
+function closeModal(e){
+    e.target.contentEditable = false;
+}
+
+function handleFilterSelection(e) {
+    const filterBtn = e.target;
+
+    for(let button of filterButtons) {
+        button.classList.add("btn-secondary");
+        button.classList.remove("btn-primary");
+    }
+
+    filterBtn.classList.add("btn-primary");
+    filterBtn.classList.remove("btn-secondary");
+
 }
