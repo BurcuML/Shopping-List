@@ -1,6 +1,12 @@
 const shoppingList = document.querySelector('.shopping-list');
+const shoppingForm = document.querySelector('.shopping-form');
 
+document.addEventListener("DOMContentLoaded", function(){
+shoppingForm.addEventListener('submit', submitFormHandler)
 saveItem();
+})
+
+
 
 function saveItem() {
     const items = [
@@ -36,12 +42,45 @@ function saveItem() {
     }) */
 }
 
+function addItem(input){
+    const id = generatID()
+    const newItem = createItem(
+        {
+            id: id,
+            name: input.value,
+            purchased:false
+        }
+    )
+
+    shoppingList.prepend(newItem)
+
+    input.value = ""
+}
+
+function generatID(){
+    return Date.now().toString();
+}
+
+function submitFormHandler(event) {
+    event.preventDefault(); //sayfanın yenilenmesini engeller
+
+    const input = document.getElementById("item_name")
+
+    if(input.value.trim().length === 0 ){
+        alert("Input shouldn't be empty")
+        return
+    }
+
+    addItem(input)
+}
+
 function createItem(item){
     //checkbox
     const input = document.createElement("input");
     input.type = "checkbox";
     input.classList.add("form-check-input");
     input.checked = item.purchased;
+    input.addEventListener("change", toggleCompleted)
 
     //item
     const div = document.createElement("div")
@@ -51,14 +90,26 @@ function createItem(item){
     //delete icon
     const deleteIcon = document.createElement("span")
     deleteIcon.className = "fs-3 bi bi-x text-danger delete-icon" //bir tane değil birkaç tane class olduğu için classname kullandık
+    deleteIcon.addEventListener("click", removeItem)
 
     //li
     const li = document.createElement("li")
     li.className = "border rounded p-3 mb-1"
+    li.toggleAttribute("item-purchased", item.purchased)
 
     li.appendChild(input)
     li.appendChild(div)
     li.appendChild(deleteIcon)
 
     return li;
+}
+
+function toggleCompleted(e){
+   const li = e.target.parentElement;
+   li.toggleAttribute("item-purchased")
+}
+
+function removeItem(e){
+    const li = e.target.parentElement;
+    shoppingList.remove(li);
 }
